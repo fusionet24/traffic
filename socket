@@ -7,8 +7,21 @@ public class socketclass {
 	{	
 		try {
 	Socket testSocket = new Socket("192.168.0.222", 5000);
-	System.out.println("The total pay is " +testSocket.isConnected()); 
 	
+	System.out.println("The total pay is " +testSocket.isConnected()); 
+
+	
+	 OutputStream outToServer = testSocket.getOutputStream();
+     DataOutputStream out =
+                   new DataOutputStream(outToServer);
+     out.writeUTF("HELO");
+	
+	//in.readUTF("HELO");
+
+ 	InputStream inFromServer = testSocket.getInputStream();
+ 	 DataInputStream in =
+              new DataInputStream(inFromServer);
+  	System.out.println(in.readUTF());
 	}catch(IOException e){}
 	}
 }
