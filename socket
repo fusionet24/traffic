@@ -1,0 +1,14 @@
+package test;
+import java.io.*;
+import java.net.*;
+public class socketclass {
+	
+	public static void main(String [] args)
+	{	
+		try {
+	Socket testSocket = new Socket("192.168.0.222", 5000);
+	System.out.println("The total pay is " +testSocket.isConnected()); 
+	
+	}catch(IOException e){}
+	}
+}
