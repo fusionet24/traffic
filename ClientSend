@@ -1,0 +1,54 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package clientside;
+
+// The Send CLASS for Multithreading conncetions with the server.
+import java.io.*;
+import java.net.*;
+
+public class ClientSend {
+
+////////////////////////SERVER DETAILS///////////////////////////////
+        public static final int ServerPort = 5000; // Servers PORT
+        public static final String SeverAddress= "192.168.0.142";///The Servers Address
+/////////////////////////////////////////////////////////////////////
+//Main Method
+    public static void main(String [] args)
+	{	
+        
+            try {
+         
+	Socket ClientSocket = new Socket(SeverAddress, ServerPort); //Socket Construction
+	
+     
+	System.out.println("The Interface is  " + ClientSocket.isConnected());// 
+
+	PrintWriter out = 
+			new PrintWriter(ClientSocket.getOutputStream(), true);//
+	out.println("HELO");
+	
+	
+	///
+     OutputStream outToServer = ClientSocket.getOutputStream();
+    DataOutputStream out =
+                   new DataOutputStream(outToServer);
+     out.writeUTF("HELO");
+	
+ 
+
+ 
+	}catch(IOException e){}
+	}
+    
+    
+    
+    
+    
+
+
+
+
+}
