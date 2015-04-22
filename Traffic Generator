@@ -1,0 +1,59 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package clientside;
+import java.util.*;// 
+/**
+ *
+ * @author computing
+ */
+public class TrafficGenerator {
+          
+        public Random rnd = new Random(); // New Random
+
+    public static void main(String [] args)
+	{
+            int NoOfLanes = 4;
+            String A;
+        TrafficGenerator TrafficGenerator1 = new TrafficGenerator();
+       A = TrafficGenerator1.GetTraffic(NoOfLanes);
+            System.out.println(A);
+             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+            
+            System.out.println(A);
+               System.out.println(A);
+             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+                System.out.println(A);
+             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+                System.out.println(A);
+             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+        }
+    // This class Auto Generates the traffic
+    
+     public String GetTraffic(int NoOfLanes) {
+int Starting_Lane = 0;
+int Destination_Lane = 0;
+         do {
+
+ Starting_Lane = rnd.nextInt(NoOfLanes ); // Returns a value between 0 and no of lanes 
+ Starting_Lane = Starting_Lane +1;// Makes sure that the number betwen 1 AND NO OF LANES :)
+ Destination_Lane = rnd.nextInt(NoOfLanes ); // Returns a value between 0 and no of lanes 
+Destination_Lane = Destination_Lane +1;// Makes sure that the number betwen 1 AND NO OF LANES :)
+
+
+} while (Starting_Lane == Destination_Lane );// MAke Sure they're not the same 
+// STRING BUILDER IS CALLED
+StringBuilder Route = new StringBuilder();
+Route.append("");//STARTS STRING
+Route.append(Starting_Lane);// Adds Starting lane
+Route.append(":");//Adds colon
+Route.append(Destination_Lane);//Adds Destination lane
+Route.append(";");//Adds ending semi colon
+String Route1 = Route.toString(); // Converts String Builder to String
+     return Route1; // Return Randomly Genearted Traffic Instance
+     }
+    }   
+    
+
