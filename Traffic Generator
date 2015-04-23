@@ -5,34 +5,34 @@
  */
 package clientside;
 import java.util.*;// 
-/**
- *
- * @author computing
- */
-public class TrafficGenerator {
+
+////////////////////////////////////////GENERATOR CLASS/////////////////////////////////////////////////
+public class Generator {
           
         public Random rnd = new Random(); // New Random
 
     public static void main(String [] args)
 	{
-            int NoOfLanes = 4;
-            String A;
-        TrafficGenerator TrafficGenerator1 = new TrafficGenerator();
-       A = TrafficGenerator1.GetTraffic(NoOfLanes);
-            System.out.println(A);
-             A = TrafficGenerator1.GetTraffic(NoOfLanes);
-            
-            System.out.println(A);
-               System.out.println(A);
-             A = TrafficGenerator1.GetTraffic(NoOfLanes);
-                System.out.println(A);
-             A = TrafficGenerator1.GetTraffic(NoOfLanes);
-                System.out.println(A);
-             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+            //EXAMPLE OF HOW TO IMPLEMENT/////////////////////////////
+//            int NoOfLanes = 4;
+//            String A;
+//        Generator TrafficGenerator1 = new Generator();
+//       A = TrafficGenerator1.GetTraffic(NoOfLanes);
+//            System.out.println(A);
+//             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+//            
+//            System.out.println(A);
+//               System.out.println(A);
+//             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+//                System.out.println(A);
+//             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+//                System.out.println(A);
+//             A = TrafficGenerator1.GetTraffic(NoOfLanes);
+            /////////////////////////////////////////////////////////////////////
         }
-    // This class Auto Generates the traffic
-    
-     public String GetTraffic(int NoOfLanes) {
+
+   //////////////////////////////Traffic GENERATOR METHOD//////////////////////////////////////////////   
+ public String GetTraffic(int NoOfLanes) {
 int Starting_Lane = 0;
 int Destination_Lane = 0;
          do {
@@ -53,7 +53,24 @@ Route.append(Destination_Lane);//Adds Destination lane
 Route.append(";");//Adds ending semi colon
 String Route1 = Route.toString(); // Converts String Builder to String
      return Route1; // Return Randomly Genearted Traffic Instance
+
      }
+   //////////////////////////////Traffic GENERATOR METHOD//////////////////////////////////////////////
+ 
+ 
+ 
+     //////////////////////////////PEDISTRAIN GENERATOR METHOD//////////////////////////////////////////////
+ public int GetPeds() {
+             int MaximumNoOfPedestrians  = 6;//Maxium Required Number of Pedistrains that can be generatred at any time.
+             MaximumNoOfPedestrians  = MaximumNoOfPedestrians  +1;//Makes Upper Limit correct
+        int Pedestrians = rnd.nextInt(MaximumNoOfPedestrians );    //Randonly Generates No of Peds
+        
+            return Pedestrians; //Return No Of Pedistrains
+     }
+      //////////////////////////////PEDISTRAIN GENERATOR METHOD//////////////////////////////////////////////    
+     
+     
     }   
-    
+   
+  
 
