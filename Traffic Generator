@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package clientside;
+package traffic;
 import java.util.*;// 
 
-////////////////////////////////////////GENERATOR CLASS/////////////////////////////////////////////////
 public class Generator {
           
         public Random rnd = new Random(); // New Random
@@ -71,6 +65,3 @@ String Route1 = Route.toString(); // Converts String Builder to String
      
      
     }   
-   
-  
-
