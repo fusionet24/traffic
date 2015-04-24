@@ -1,0 +1,250 @@
+package traffic;
+import java.util.*;
+import javax.swing.table.*;
+import java.io.*;
+import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class logic {
+    
+    // The number of lanes in the junction
+    int noLanes = 4;
+    int trafficMaxWait = 15;
+    int carsMin = 1;
+    int pedMaxWait = 30;
+    boolean running = true;
+    
+    long StartTimer[] = new long[noLanes];  //Start Timers
+    long ComparisionTimer[] = new long[noLanes];  // Creates COmparision Timer
+    
+    // Creating a queue for every lane
+    public Queue[] lanes = listQueues(noLanes);
+    
+    // The lane which is currently open
+    public int currentOpen = 0;
+    
+    // An array of floats containing the timer values
+    public long[] cWait = new long[noLanes];
+    
+    public int pWait = 0;
+    public int pTotal = 0;
+    
+    // An array containing the lights for the pedestrians
+    public boolean pLight = false;
+    
+    public static void main(String [] args){
+            
+            // Creates instance of logic
+            logic logic1 = new logic(); 
+            
+            TrafficGUI trafficGUI = new TrafficGUI();
+            trafficGUI.setVisible(true);
+            DefaultTableModel model = (DefaultTableModel) trafficGUI.jTable1.getModel();
+            
+            String traffic;
+            int pedestrian;
+            for (int i=0; i < logic1.lanes.length; i++){
+                int tempGreen = 0;
+                if (logic1.currentOpen == i){
+                    tempGreen = 1;
+                }
+                model.addRow(new Object[]{i+1,(logic1.lanes[i].size()),tempGreen});      
+            }
+            
+            //long CurrentTime = System.currentTimeMillis();//Gets Current Time
+            Arrays.fill(logic1.StartTimer, System.currentTimeMillis());             // Fill Start timer with current time.
+            //CurrentTime = System.currentTimeMillis();//  Current time again
+            
+            //Arrays.fill(logic1.ComparisionTimer, System.currentTimeMillis()); ///// FILLL Comparision Timer with current time
+            //for(int i=0; i < logic1.noLanes; i++){
+            //    logic1.cWait[i] = (logic1.ComparisionTimer[i] - logic1.StartTimer[i])/1000; //S aves it in seconds from milliseconds
+            //}
+            
+            // Begins the process of updating the traffic lights
+            new Thread ( () -> {
+                while (logic1.running = true){
+                    logic1.updateLights(model);
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(logic.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            }).start();
+            
+            new Thread( () -> {
+                while (logic1.running = true){
+                    logic1.OpenLane(model, trafficGUI);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(logic.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }  
+            }).start();
+            
+            
+            try {
+                Socket testSocket = new Socket("192.168.0.208", 5000);
+	
+                System.out.println("Connection = " +testSocket.isConnected()); 
+
+                PrintWriter out = new PrintWriter(testSocket.getOutputStream(), true);
+                //out.println("REGI");
+                out.println("BEGI");
+                //InputStream inFromServer = testSocket.getInputStream();
+                //DataInputStream in = new DataInputStream(inFromServer);
+                BufferedReader in = new BufferedReader(
+                new InputStreamReader(testSocket.getInputStream()));
+                String fromServer;
+                
+                while ((fromServer = in.readLine()) != null) {
+                    System.out.println("Server: " + fromServer);
+                    logic1.newInfo(fromServer, model, trafficGUI);
+                }
+            }catch(IOException e){}       
+            
+            // Test string with the protocol used to create a car
+            //String testSt = "3:4;";
+            // Creation of a new car using the test
+            
+            //Generator GeneratorT = new Generator();
+            //traffic = GeneratorT.GetTraffic(logic1.noLanes);
+            //System.out.println(traffic);
+            
+            //logic1.newCar(traffic, model);
+            //Generator GeneratorP = new Generator();
+            //pedestrian = GeneratorP.GetPeds();
+            
+            //System.out.println(logic1.currentOpen);
+            
+            // Finds the smallest value and stores the index in small
+            //int small = logic1.findSmall(pTotal);
+            //System.out.println(small);
+            //pTotal[1] = 0;
+            //small = logic1.findSmall(pTotal);
+            //System.out.println(small);
+            
+            //System.out.println(logic1.lanes[0].peek());
+            //System.out.println(logic1.lanes[1].peek());
+            //System.out.println(logic1.lanes[2].peek());
+            //System.out.println(logic1.lanes[3].peek());
+    } 
+    
+    // Creation of an array of queues
+    public Queue[] listQueues (int noLanes) {
+        Queue[] queues = new Queue[noLanes]; 
+        for(int i = 0; i <= (noLanes-1); i++){
+            queues[i] = new LinkedList();
+        }
+        return queues;
+    }
+    
+    // Finds the index of the location with the lowest value
+    public int getLargeLong (long[] array) {
+        long currentValue = array[0]; 
+        int largestIndex = 0;
+        for (int i=1; i < array.length; i++) {
+            if (array[i] > currentValue){ 
+                currentValue = array[i];
+                largestIndex = i;
+            }
+        }
+        return largestIndex;
+    }
+
+    // Adds a new car to the relevant queue with its destination
+    public void newInfo (String input, DefaultTableModel model, TrafficGUI trafficGUI) {
+        //String Loc = input.substring(0,1);
+        //String Dest = input.substring(2,3);
+        String delims = "[;]";
+        String[] tokens = input.split(delims);
+        //System.out.println("Tokens: " + tokens[0]);
+        for (int i=0; i < tokens.length; i++){
+            if (tokens[i].length() <= 2 && tokens[i].length() > 0){   // If its a pedestrian
+                pTotal++;
+                trafficGUI.jLabel3.setText(String.valueOf(pTotal));
+                // pedestrian timer goes here
+            }else if (tokens[i].length() > 2 && tokens[i].length() < 10){  // Its a car
+                String delims2 = "[:]";
+                String[] tokens2 = tokens[i].split(delims2);
+                //System.out.println(tokens2[0]);
+                //System.out.println(tokens2[1]);
+                int iLoc = Integer.parseInt(tokens2[0]);
+                int iDest = Integer.parseInt(tokens2[1]);
+                lanes[iLoc-1].add(iDest);
+                model.setValueAt(lanes[iLoc-1].size(), iLoc-1, 1);
+            }
+        }
+    }
+    
+    public void updateLights (DefaultTableModel model) {
+        
+        int large = getLargeLane(lanes);
+        int lWait = getLargeLong(cWait);
+        Arrays.fill(ComparisionTimer, System.currentTimeMillis()); ///// FILLL Comparision Timer with current time
+        for(int i=0; i < noLanes; i++){
+            cWait[i] = (ComparisionTimer[i] - StartTimer[i])/1000; //S aves it in seconds from milliseconds
+        }
+        
+        if (pWait > pedMaxWait){                    // if pedestrian has waited longer than max
+            currentOpen = 0;
+            System.out.println("trigger1");
+        }
+        else if (cWait[lWait] > trafficMaxWait){    // if car has waited longer than max
+            currentOpen = lWait + 1;
+            model.setValueAt(1, currentOpen-1, 2);
+            System.out.println("trigger2");
+        }
+        else if (lanes[large].size() >= carsMin){   // if there are more cars than max
+            currentOpen = large + 1;
+            model.setValueAt(1, currentOpen-1, 2);
+            System.out.println("trigger3");
+        }
+        else{
+            currentOpen = 0;               
+            System.out.println("trigger4");
+        }
+
+        
+        // UPDATE THE GUI HERE
+    }
+
+    public void OpenLane (DefaultTableModel model, TrafficGUI trafficGUI) {
+    //Timer for 5 seconds
+       long startTime = System.currentTimeMillis();
+           
+            if(currentOpen == 0){
+                pTotal = 0;
+                pWait = 0;
+                trafficGUI.jLabel3.setText(String.valueOf(pTotal));
+                System.out.println("Letting pedestrians cross");
+            }
+            else if(lanes[currentOpen-1].peek() == null){    //Catches empty queue to make sure no poping is done.
+                System.out.println("No cars currently waiting");
+            }
+            else{
+                System.out.println("Car travelling in " + lanes[(currentOpen-1)].poll() + " direction. Leaves lane no. " + (currentOpen-1));    // Give Text Field Output
+                model.setValueAt(lanes[currentOpen-1].size(), (currentOpen-1), 1);
+            }
+            //try {
+            //    Thread.sleep(500);                 //500 milliseconds is 1/2 a second.   
+            //} catch(InterruptedException ex) {
+            //    Thread.currentThread().interrupt();// catch exception incase thread is interupted. 
+            //    }
+            //while(System.currentTimeMillis()-startTime >= 5000); //If current change in time is less than 5 sec0nds  
+    }
+    
+    public int getLargeLane(Queue[] lanes) {
+        int largest = 0;
+        int largestIndex = 0;
+        for (int i = 0; i < noLanes; i++){
+            if (lanes[i].size() > largest){
+                largest = lanes[i].size();
+                largestIndex = i;
+            }
+        }
+        return largestIndex;
+    }  
+}
